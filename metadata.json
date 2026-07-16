@@ -1,0 +1,6 @@
+{
+  "name": "Aureon Studios",
+  "description": "An ultra-premium, cinematic digital experience and luxury creative studio for brand strategy, marketing, creative consulting, media, web development, and AI solutions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
