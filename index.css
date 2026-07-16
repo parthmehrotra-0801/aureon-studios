@@ -1,0 +1,300 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { CASE_STUDIES, CaseStudy } from '../data';
+import { TrendingUp, Award, ArrowUpRight, CheckCircle2, ChevronRight, Activity } from 'lucide-react';
+
+export const CaseStudiesSection: React.FC = () => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [hoveredDataIndex, setHoveredDataIndex] = useState<number | null>(null);
+
+  const study = CASE_STUDIES[activeIdx];
+
+  // Helper calculation for custom SVG graph scaling
+  const chartHeight = 200;
+  const chartWidth = 500;
+  const padding = 30;
+  
+  const points = study.chartData;
+  const maxVal = 400; // Hard max for chart grid
+
+  // Generate SVG points string
+  const getCoordinates = (isAureon: boolean) => {
+    return points.map((p, i) => {
+      const val = isAureon ? p.aureonEffect : p.benchmark;
+      const x = padding + (i * (chartWidth - padding * 2)) / (points.length - 1);
+      const y = chartHeight - padding - (val / maxVal) * (chartHeight - padding * 2);
+      return { x, y, name: p.name, value: val };
+    });
+  };
+
+  const aureonCoords = getCoordinates(true);
+  const benchmarkCoords = getCoordinates(false);
+
+  const getPathString = (coords: { x: number; y: number }[]) => {
+    return coords.reduce((acc, c, i) => {
+      return i === 0 ? `M ${c.x} ${c.y}` : `${acc} L ${c.x} ${c.y}`;
+    }, "");
+  };
+
+  const getAreaPathString = (coords: { x: number; y: number }[]) => {
+    if (coords.length === 0) return "";
+    const start = coords[0];
+    const end = coords[coords.length - 1];
+    const linePath = getPathString(coords);
+    return `${linePath} L ${end.x} ${chartHeight - padding} L ${start.x} ${chartHeight - padding} Z`;
+  };
+
+  return (
+    <section 
+      id="case-studies" 
+      className="py-24 md:py-32 bg-[#050505] relative overflow-hidden"
+    >
+      {/* Decorative Aura */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[400px] h-[400px] bg-gold/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 text-left">
+          <div className="max-w-xl">
+            <span className="font-mono text-[10px] tracking-[0.3em] text-gold uppercase block mb-3">Case Studies</span>
+            <h2 className="font-serif text-4xl md:text-6xl text-white tracking-tight leading-none font-medium">
+              Narrative <br />
+              <span className="font-serif italic text-gold">Transformations.</span>
+            </h2>
+          </div>
+
+          {/* Tab Selector */}
+          <div className="flex bg-white/[0.03] border border-white/5 rounded-full p-1.5 self-start md:self-auto backdrop-blur-md">
+            {CASE_STUDIES.map((cs, index) => (
+              <button
+                key={cs.id}
+                onClick={() => {
+                  setActiveIdx(index);
+                  setHoveredDataIndex(null);
+                }}
+                className={`px-5 py-2.5 rounded-full font-sans text-[10px] tracking-widest uppercase transition-all duration-300 relative cursor-pointer ${
+                  activeIdx === index ? 'text-black font-semibold' : 'text-silver text-opacity-70 hover:text-white'
+                }`}
+                id={`cs-tab-${cs.id}`}
+              >
+                <span className="relative z-10">{cs.client}</span>
+                {activeIdx === index && (
+                  <motion.div
+                    layoutId="activeCSTabIndicator"
+                    className="absolute inset-0 bg-gold rounded-full z-0"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Storyboard Bento Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left items-stretch">
+          {/* Left Column: Core Narrative (Lg-Span-7) */}
+          <div className="lg:col-span-7 flex flex-col justify-between gap-8 bg-dark-panel/50 border border-white/5 p-8 md:p-10 rounded-2xl">
+            <div>
+              <span className="font-mono text-[9px] text-gold tracking-widest uppercase block mb-3">Project Narrative</span>
+              <h3 className="font-serif text-2xl md:text-3xl text-white font-medium mb-4 leading-snug">
+                {study.title}
+              </h3>
+              <p className="font-serif text-sm italic text-silver text-opacity-80 leading-relaxed mb-6">
+                "{study.subtitle}"
+              </p>
+
+              {/* Strategy Details */}
+              <div className="space-y-6 border-t border-white/5 pt-6 mt-6">
+                <div>
+                  <h4 className="font-mono text-[9px] text-gold tracking-widest uppercase block mb-1">Context / Challenge</h4>
+                  <p className="font-sans text-xs text-silver text-opacity-70 leading-relaxed">{study.challenge}</p>
+                </div>
+                <div>
+                  <h4 className="font-mono text-[9px] text-gold tracking-widest uppercase block mb-1">Our Protocol</h4>
+                  <p className="font-sans text-xs text-silver text-opacity-70 leading-relaxed">{study.strategy}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Metric Counters */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 border-t border-white/5 pt-6 bg-black/40 p-6 rounded-xl">
+              {study.results.map((res, rIdx) => (
+                <div key={rIdx} className="flex flex-col gap-1.5">
+                  <span className="font-serif text-3xl font-bold text-gold tracking-tight">{res.value}</span>
+                  <span className="font-sans text-[9px] text-silver text-opacity-60 uppercase tracking-widest leading-snug">
+                    {res.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Dynamic SVG Graph Dashboard (Lg-Span-5) */}
+          <div className="lg:col-span-5 bg-[#111111]/90 border border-white/10 p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-transparent pointer-events-none" />
+
+            {/* Dashboard Header */}
+            <div className="relative z-10 flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-gold animate-pulse" />
+                <span className="font-mono text-[10px] text-gold tracking-widest uppercase">Growth Vector Analyser</span>
+              </div>
+              <span className="px-2 py-0.5 rounded border border-white/10 bg-white/5 font-mono text-[8px] text-silver tracking-widest uppercase">
+                Demo Metric
+              </span>
+            </div>
+
+            {/* Main Interactive SVG Graph */}
+            <div className="relative z-10 bg-black/40 border border-white/5 p-4 rounded-xl">
+              <svg 
+                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                className="w-full h-auto overflow-visible select-none"
+              >
+                <defs>
+                  {/* Glowing mask for Area under path */}
+                  <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.0" />
+                  </linearGradient>
+                  
+                  {/* Subtle blur filter */}
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                {/* Horizontal Grid lines */}
+                {[0, 1, 2, 3].map((idx) => {
+                  const y = padding + (idx * (chartHeight - padding * 2)) / 3;
+                  return (
+                    <line
+                      key={idx}
+                      x1={padding}
+                      y1={y}
+                      x2={chartWidth - padding}
+                      y2={y}
+                      stroke="rgba(255,255,255,0.04)"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+
+                {/* Area under Aureon Effect curve */}
+                <path
+                  d={getAreaPathString(aureonCoords)}
+                  fill="url(#areaGrad)"
+                  className="transition-all duration-700"
+                />
+
+                {/* Benchmark line (Silver/Grey) */}
+                <path
+                  d={getPathString(benchmarkCoords)}
+                  fill="none"
+                  stroke="#52525b"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 4"
+                  className="transition-all duration-700"
+                />
+
+                {/* Aureon Effect Line (Gold Glowing) */}
+                <path
+                  d={getPathString(aureonCoords)}
+                  fill="none"
+                  stroke="#D4AF37"
+                  strokeWidth="3"
+                  filter="url(#glow)"
+                  className="transition-all duration-700"
+                />
+
+                {/* Anchor Points & Mouse triggers */}
+                {aureonCoords.map((pt, i) => (
+                  <g key={i}>
+                    {/* Invisible click/hover triggers covering the column zone */}
+                    <rect
+                      x={pt.x - 25}
+                      y={0}
+                      width={50}
+                      height={chartHeight}
+                      fill="transparent"
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredDataIndex(i)}
+                      onMouseLeave={() => setHoveredDataIndex(null)}
+                    />
+
+                    {/* Benchmark Dot */}
+                    <circle
+                      cx={benchmarkCoords[i].x}
+                      cy={benchmarkCoords[i].y}
+                      r={3}
+                      fill="#71717a"
+                      className="transition-all duration-300"
+                    />
+
+                    {/* Aureon Glowing Gold Dot */}
+                    <circle
+                      cx={pt.x}
+                      cy={pt.y}
+                      r={hoveredDataIndex === i ? 6 : 4}
+                      fill="#D4AF37"
+                      stroke="#FFFFFF"
+                      strokeWidth={hoveredDataIndex === i ? 1.5 : 0}
+                      className="transition-all duration-300 cursor-pointer"
+                    />
+                  </g>
+                ))}
+              </svg>
+
+              {/* Dynamic Interactive Tooltip overlay */}
+              <div className="h-12 mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+                <AnimatePresence mode="wait">
+                  {hoveredDataIndex !== null ? (
+                    <motion.div
+                      key="tooltip"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      className="w-full flex justify-between items-center text-xs"
+                    >
+                      <span className="font-mono text-silver text-opacity-50">{study.chartData[hoveredDataIndex].name}</span>
+                      <div className="flex gap-4">
+                        <span className="font-sans text-silver text-opacity-60">
+                          Baseline: <strong className="text-white">{study.chartData[hoveredDataIndex].benchmark}</strong>
+                        </span>
+                        <span className="font-sans text-gold">
+                          Aureon Effect: <strong className="text-gold font-bold">{study.chartData[hoveredDataIndex].aureonEffect}%</strong>
+                        </span>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="prompt"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="w-full text-center"
+                    >
+                      <span className="font-mono text-[9px] text-silver text-opacity-40 uppercase tracking-widest animate-pulse">
+                        Hover across graph columns to view metrics
+                      </span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Narrative explanation */}
+            <div className="mt-6 border-t border-white/5 pt-4 text-left">
+              <span className="font-mono text-[9px] text-gold tracking-widest uppercase block mb-1">Analytical Outline</span>
+              <p className="font-sans text-[10px] text-silver text-opacity-60 leading-relaxed">
+                The solid gold line plots performance outputs under Aureon creative governance. The dotted silver line registers industry norm benchmarks for equivalent periods.
+              </p>
+              <span className="font-sans text-[8px] text-silver text-opacity-30 block mt-2 leading-none">
+                * Simulated tracking indices. All figures labeled for illustrative mapping.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

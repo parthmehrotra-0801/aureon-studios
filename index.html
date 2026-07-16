@@ -1,23 +1,165 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aureon Studios | Prestige Creative Studio • India</title>
-    
-    <!-- Browser Tab Icon / Favicon (Vector SVG AS Monogram) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Ctext x='35' y='115' style='font-family:%22Cormorant Garamond%22,%22Playfair Display%22,serif;font-size:115px;font-style:italic;font-weight:300;fill:%23C0C0C0;'%3EA%3C/text%3E%3Ctext x='85' y='115' style='font-family:%22Cormorant Garamond%22,%22Playfair Display%22,serif;font-size:115px;font-style:italic;font-weight:300;fill:%23C0C0C0;'%3ES%3C/text%3E%3C/svg%3E" />
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@1,300..700&display=swap');
+@import "tailwindcss";
 
-    <!-- SEO / Metadata & Open Graph Social Previews -->
-    <meta name="description" content="Aureon Studios is India's premium creative consulting enclave. Architecting iconic brand identities, high-impact films, modern e-commerce systems, and server-side AI integrations for global clients." />
-    <meta property="og:title" content="Aureon Studios | Prestige Creative Studio" />
-    <meta property="og:description" content="India's premium creative consulting enclave. Architecting brand identities, high-impact films, digital ecosystems, and AI integrations." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630' style='background:%23050505;display:flex;align-items:center;justify-content:center;'%3E%3Crect width='100%25' height='100%25' fill='%23050505'/%3E%3Cg transform='translate(440, 115)'%3E%3Ctext x='116' y='135' text-anchor='middle' style='font-family:%22Cormorant Garamond%22,%22Playfair Display%22,serif;font-size:138px;font-style:italic;fill:%23C0C0C0;'%3EA%3C/text%3E%3Ctext x='178' y='135' text-anchor='middle' style='font-family:%22Cormorant Garamond%22,%22Playfair Display%22,serif;font-size:138px;font-style:italic;fill:%23C0C0C0;'%3ES%3C/text%3E%3Ctext x='160' y='208' text-anchor='middle' style='font-family:%22Pinyon Script%22,%22Great Vibes%22,cursive;font-size:52px;fill:%23FFFFFF;'%3EAureon Studios%3C/text%3E%3Ctext x='160' y='248' text-anchor='middle' style='font-family:%22Inter%22,sans-serif;font-size:10px;font-weight:500;fill:%23FFFFFF;letter-spacing:0.45em;opacity:0.9;'%3EBRANDING  •  MARKETING  •%3C/text%3E%3Ctext x='160' y='278' text-anchor='middle' style='font-family:%22Inter%22,sans-serif;font-size:10px;font-weight:500;fill:%23FFFFFF;letter-spacing:0.45em;opacity:0.9;'%3EMEDIA%3C/text%3E%3C/g%3E%3C/svg%3E" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+@theme {
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+  --font-script: "Pinyon Script", "Great Vibes", cursive;
+  --font-monogram: "Cormorant Garamond", "Playfair Display", serif;
+  
+  --color-gold: #D4AF37;
+  --color-gold-hover: #AA820A;
+  --color-silver: #C0C0C0;
+  --color-dark-bg: #050505;
+  --color-dark-panel: #111111;
+}
+
+/* Base resets & scroll transitions */
+html {
+  scroll-behavior: smooth;
+  background-color: #050505;
+  overflow-y: scroll;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: #050505;
+}
+
+/* Custom premium scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Custom glassmorphism variables */
+.glass-panel {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Infinite sliding marquee animation (for testimonials) */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+  display: flex;
+}
+
+/* Reverse marquee animation if needed */
+.reverse-marquee {
+  animation-direction: reverse;
+}
+
+/* Slow spin for decorative editorial elements */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 80s linear infinite;
+}
+
+/* Micro glow highlights */
+.glow-accent {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.08);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Text stroke effects */
+.text-stroke-silver {
+  -webkit-text-stroke: 1px rgba(192, 192, 192, 0.15);
+}
+
+/* Grid overlay background custom keyframes */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Custom vertical writing mode */
+.vertical-rl {
+  writing-mode: vertical-rl;
+}
+
+/* Metallic light sweep shine animation */
+@keyframes metallicSweep {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  40% {
+    transform: translateX(150%) skewX(-25deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-25deg);
+  }
+}
+
+.metallic-sweep-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.metallic-sweep-line {
+  position: absolute;
+  top: 0;
+  left: -25%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-150%) skewX(-25deg);
+  animation: metallicSweep 6.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  pointer-events: none;
+}
 

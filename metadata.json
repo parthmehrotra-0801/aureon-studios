@@ -1,6 +1,10 @@
-{
-  "name": "Aureon Studios",
-  "description": "An ultra-premium, cinematic digital experience and luxury creative studio for brand strategy, marketing, creative consulting, media, web development, and AI solutions.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
