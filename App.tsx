@@ -1,236 +1,382 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { PROJECTS, Project } from '../data';
-import { X, Calendar, User, Layers, Sparkles, TrendingUp, ChevronRight } from 'lucide-react';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Send, CheckCircle2, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
 
-export const PortfolioSection: React.FC = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+export const Contact: React.FC = () => {
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    company: "",
+    projectType: "branding",
+    budget: "$10k-$25k",
+    message: ""
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate high-end server-side processing
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      // Reset form after 5 seconds to allow another input
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormState({
+          name: "",
+          email: "",
+          company: "",
+          projectType: "branding",
+          budget: "$10k-$25k",
+          message: ""
+        });
+      }, 5000);
+    }, 1500);
+  };
+
+  const socialLinks = [
+    { label: "INSTAGRAM", href: "https://instagram.com/aureonstudios", icon: <Instagram size={14} /> },
+    { label: "LINKEDIN", href: "https://linkedin.com/company/aureonstudios", icon: <Linkedin size={14} /> },
+    { label: "EMAIL US", href: "mailto:hello@aureonstudios.com", icon: <Mail size={14} /> }
+  ];
 
   return (
     <section 
-      id="portfolio" 
-      className="py-24 md:py-32 bg-black relative overflow-hidden"
+      id="contact" 
+      className="relative py-28 lg:py-40 bg-[#050505] overflow-hidden"
     >
-      {/* Aesthetic Accents */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute inset-0 grid-mesh opacity-[0.01]" />
+      <div className="absolute right-10 bottom-10 w-[450px] h-[450px] bg-white/[0.01] rounded-full blur-[130px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-30">
+        
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-6 text-left">
-          <div className="max-w-xl">
-            <span className="font-mono text-[10px] tracking-[0.3em] text-gold uppercase block mb-3">Elite Portfolio</span>
-            <h2 className="font-serif text-4xl md:text-6xl text-white tracking-tight leading-none font-medium">
-              Bespoke <br />
-              <span className="font-serif italic text-gold">Masterpieces.</span>
-            </h2>
-          </div>
-          <p className="font-sans text-xs md:text-sm text-silver max-w-sm leading-relaxed text-opacity-80">
-            A meticulous showcase of digital environments and narrative campaigns. Each record is backed by illustrative, highly refined business performance results.
-          </p>
+        <div className="flex flex-col mb-16 lg:mb-24">
+          <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-[#B8B8B8] mb-4">
+            [ CAPITAL ENGAGEMENT • COMMUNICATIONS ]
+          </span>
+          <h2 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight text-white uppercase">
+            COMMISSION THE STUDIO
+          </h2>
+          <div className="w-12 h-[1px] bg-white mt-4" />
         </div>
 
-        {/* Masonry Layout Grid */}
-        <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
-          id="portfolio-masonry-grid"
-        >
-          {PROJECTS.map((project, index) => {
-            // Apply varied column layout to give a luxury masonry look
-            let gridSpanClass = "col-span-1";
-            if (index === 0) gridSpanClass = "md:col-span-2 lg:col-span-2 row-span-2";
-            if (index === 3) gridSpanClass = "md:col-span-2 lg:col-span-1";
-            if (index === 6) gridSpanClass = "md:col-span-2 lg:col-span-2";
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          
+          {/* Left Side: Brand Handles & Dynamic Map */}
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <h3 className="font-display text-2xl font-bold text-white uppercase tracking-wider mb-6">
+                Let's Craft Absolute Influence.
+              </h3>
+              <p className="font-sans text-xs md:text-sm text-[#B8B8B8] leading-relaxed tracking-wider mb-8 max-w-sm">
+                We work exclusively with select boutique brands, ambitious startups, and visionary institutions. Tell us about your scope, and our creative directors will contact you in under 24 hours.
+              </p>
 
-            return (
-              <motion.div
-                key={project.id}
-                className={`${gridSpanClass} group cursor-pointer relative rounded-2xl overflow-hidden border border-white/5 bg-[#111] h-[320px] md:h-[450px]`}
-                onClick={() => setSelectedProject(project)}
-                data-cursor="view"
-                id={`portfolio-item-${project.id}`}
-              >
-                {/* Image Layer with Zoom Effect */}
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1200ms] ease-out object-center filter brightness-[0.8]"
-                />
-
-                {/* Dark Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-85 group-hover:opacity-95 transition-opacity duration-500" />
-
-                {/* Content Overlay */}
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between text-left">
-                  {/* Card Header (Category & Year) */}
-                  <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-10px] group-hover:translate-y-0">
-                    <span className="px-3 py-1 rounded-full border border-gold/30 bg-gold/15 font-mono text-[9px] text-gold tracking-widest uppercase">
-                      {project.category}
-                    </span>
-                    <span className="font-mono text-xs text-silver tracking-widest">{project.year}</span>
+              {/* Direct Communication Info */}
+              <div className="flex flex-col gap-4 border-t border-white/[0.04] pt-8 mb-8">
+                <div className="flex items-center gap-3.5 group cursor-pointer">
+                  <div className="p-2.5 bg-white/[0.04] border border-white/[0.06] text-[#B8B8B8] group-hover:text-white transition-all duration-300">
+                    <MapPin size={14} />
                   </div>
-
-                  {/* Empty spacer for masonry visual weight */}
-                  <div className="flex-grow" />
-
-                  {/* Card Footer (Title & Client) */}
-                  <div className="transform md:translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <span className="font-mono text-[9px] text-gold tracking-widest uppercase mb-1 block">
-                      {project.client}
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      STUDIO HQ
                     </span>
-                    <h3 className="font-serif text-2xl md:text-3xl text-white font-medium tracking-wide">
-                      {project.title}
-                    </h3>
-                    
-                    {/* View Project Reveal text */}
-                    <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <span className="font-sans text-[10px] text-white tracking-widest uppercase">
-                        Reveal Case Story
-                      </span>
-                      <ChevronRight className="w-3.5 h-3.5 text-gold group-hover:translate-x-1 transition-transform" />
-                    </div>
+                    <span className="font-sans text-xs text-white/90 tracking-widest uppercase">
+                      Moradabad, Uttar Pradesh, India
+                    </span>
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
+
+                {/* Founder Info */}
+                <div className="flex items-center gap-3.5">
+                  <div className="p-2.5 bg-white/[0.04] border border-white/[0.06] text-[#B8B8B8] flex items-center justify-center w-[30px] h-[30px]">
+                    <span className="font-mono text-[9px] font-bold text-white/80">PM</span>
+                  </div>
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      FOUNDER & CREATIVE DIRECTOR
+                    </span>
+                    <span className="font-sans text-xs text-white/90 tracking-widest uppercase">
+                      Parth Mehrotra
+                    </span>
+                  </div>
+                </div>
+
+                {/* Contact Placeholders */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2 pt-4 border-t border-white/[0.02]">
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      PHONE [SECURE]
+                    </span>
+                    <span className="font-sans text-xs text-white/60 tracking-wider">
+                      +91 99XX XXX XXX
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      EMAIL [SECURE]
+                    </span>
+                    <span className="font-sans text-xs text-white/60 tracking-wider lowercase">
+                      hello@aureonstudios.com
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      INSTAGRAM
+                    </span>
+                    <span className="font-sans text-xs text-white/60 tracking-wider">
+                      @aureonstudios
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      LINKEDIN
+                    </span>
+                    <span className="font-sans text-xs text-white/60 tracking-wider">
+                      linkedin.com/company/aureonstudios
+                    </span>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-[#B8B8B8]/40 uppercase block">
+                      WEBSITE
+                    </span>
+                    <span className="font-sans text-xs text-white/60 tracking-wider">
+                      www.aureonstudios.com
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Premium Custom Map Vector Drawing (Creative Agency Signature) */}
+            <div className="w-full h-44 border border-white/[0.06] bg-[#0A0A0A] relative mb-12 lg:mb-0 group overflow-hidden">
+              {/* Abstract Map Lines (wireframe style) */}
+              <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 200">
+                <line x1="50" y1="0" x2="50" y2="200" stroke="white" strokeWidth="1" />
+                <line x1="150" y1="0" x2="150" y2="200" stroke="white" strokeWidth="1" />
+                <line x1="300" y1="0" x2="300" y2="200" stroke="white" strokeWidth="1" />
+                <line x1="0" y1="80" x2="400" y2="80" stroke="white" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="0" y1="140" x2="400" y2="140" stroke="white" strokeWidth="1" />
+                <path d="M 20,40 Q 150,150 350,30" fill="none" stroke="white" strokeWidth="2" />
+                <path d="M 10,180 Q 250,50 380,170" fill="none" stroke="white" strokeWidth="1" strokeDasharray="3 3" />
+              </svg>
+
+              {/* Holographic Glowing Location Radar */}
+              <div className="absolute left-[150px] top-[80px] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                <span className="absolute w-12 h-12 rounded-full border border-white/20 animate-ping" />
+                <span className="absolute w-6 h-6 rounded-full border border-white/40 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+              </div>
+
+              {/* Tech Spec Label Overlay */}
+              <div className="absolute bottom-3 left-3 flex flex-col font-mono text-[7px] tracking-[0.25em] text-[#B8B8B8]/40 uppercase select-none">
+                <span>COORD: 28.8386° N, 78.7768° E</span>
+                <span>GEO-LOCATOR NODE // MORADABAD HQ</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Side: Interactive Luxury Form */}
+          <div className="lg:col-span-7">
+            <div className="glass-panel p-8 lg:p-12 relative overflow-hidden">
+              
+              <AnimatePresence mode="wait">
+                {!isSubmitted ? (
+                  <motion.form
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-6"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Name */}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                          Your Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formState.name}
+                          onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                          placeholder="e.g. Alexander Mercer"
+                          className="w-full bg-[#050505] border border-white/10 px-4 py-3.5 font-sans text-xs text-white placeholder-white/20 focus:outline-none focus:border-white transition-all duration-300"
+                        />
+                      </div>
+
+                      {/* Email */}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                          Secure Email *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={formState.email}
+                          onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                          placeholder="e.g. alex@mercer.com"
+                          className="w-full bg-[#050505] border border-white/10 px-4 py-3.5 font-sans text-xs text-white placeholder-white/20 focus:outline-none focus:border-white transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Company */}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                          Company / Brand
+                        </label>
+                        <input
+                          type="text"
+                          value={formState.company}
+                          onChange={(e) => setFormState({ ...formState, company: e.target.value })}
+                          placeholder="e.g. Mercer & Co."
+                          className="w-full bg-[#050505] border border-white/10 px-4 py-3.5 font-sans text-xs text-white placeholder-white/20 focus:outline-none focus:border-white transition-all duration-300"
+                        />
+                      </div>
+
+                      {/* Project Type */}
+                      <div className="flex flex-col gap-2">
+                        <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                          Primary Capability
+                        </label>
+                        <select
+                          value={formState.projectType}
+                          onChange={(e) => setFormState({ ...formState, projectType: e.target.value })}
+                          className="w-full bg-[#050505] border border-white/10 px-4 py-3.5 font-sans text-xs text-white focus:outline-none focus:border-white transition-all duration-300 appearance-none"
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "right 16px center"
+                          }}
+                        >
+                          <option value="branding">Brand Identity Suite</option>
+                          <option value="marketing">Marketing Strategy</option>
+                          <option value="web">Cinematic Web Design</option>
+                          <option value="film">Film & Photography</option>
+                          <option value="all">Full Creative Scope</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Budget Bracket */}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                        Estimated Budget Bracket
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {["$10k-$25k", "$25k-$50k", "$50k-$100k", "Enterprise"].map((bracket) => (
+                          <button
+                            key={bracket}
+                            type="button"
+                            onClick={() => setFormState({ ...formState, budget: bracket })}
+                            className={`cursor-hover-link py-3 border font-mono text-[9px] tracking-wider uppercase transition-all duration-300 ${
+                              formState.budget === bracket
+                                ? "bg-white text-black border-white font-bold"
+                                : "bg-transparent text-white/60 border-white/10 hover:border-white/30"
+                            }`}
+                          >
+                            {bracket}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <div className="flex flex-col gap-2">
+                      <label className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/50 uppercase">
+                        Project Description *
+                      </label>
+                      <textarea
+                        required
+                        rows={4}
+                        value={formState.message}
+                        onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                        placeholder="Detail your goals, vision, and deadlines. We thrive on ambitious scopes."
+                        className="w-full bg-[#050505] border border-white/10 px-4 py-3.5 font-sans text-xs text-white placeholder-white/20 focus:outline-none focus:border-white transition-all duration-300 resize-none"
+                      />
+                    </div>
+
+                    {/* Submit CTA button */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="cursor-hover-link mt-4 group relative overflow-hidden bg-white text-black font-mono text-[10px] tracking-[0.3em] uppercase py-4.5 w-full flex items-center justify-center gap-2 font-bold transition-all duration-300"
+                    >
+                      {isSubmitting ? (
+                        <span className="relative z-10 flex items-center gap-2">
+                          TRANSMITTING SECURE DATA...
+                        </span>
+                      ) : (
+                        <span className="relative z-10 flex items-center gap-2 transition-colors group-hover:text-white">
+                          TRANSMIT INQUIRY
+                          <Send size={12} />
+                        </span>
+                      )}
+                      <div className="absolute inset-0 bg-[#050505] translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1] -z-0" />
+                    </button>
+                  </motion.form>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center text-center py-12 px-6"
+                  >
+                    <CheckCircle2 size={48} className="text-white mb-6 animate-pulse" />
+                    <h3 className="font-display text-2xl font-bold text-white uppercase tracking-wider mb-3">
+                      Transmission Successful
+                    </h3>
+                    <p className="font-sans text-xs md:text-sm text-[#B8B8B8] leading-relaxed tracking-wider max-w-sm mb-6">
+                      Your project brief has been secure-routed directly to our executive creative directors. Check your secure inbox shortly for our analysis.
+                    </p>
+                    <span className="font-mono text-[8px] tracking-[0.2em] text-white/30 uppercase">
+                      SECURE TICKET ID: {Math.random().toString(36).substring(2, 10).toUpperCase()}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+            </div>
+          </div>
+
         </div>
+
+        {/* Floating Social Footer Handles */}
+        <div className="mt-20 pt-8 border-t border-white/[0.04] flex flex-wrap gap-8 items-center justify-center lg:justify-start">
+          <span className="font-mono text-[8px] tracking-[0.3em] text-[#B8B8B8]/30 uppercase mr-4">
+            FIND THE CRUCIBLE ON SOCIAL CHANNELS //
+          </span>
+          {socialLinks.map((social, i) => (
+            <a
+              key={i}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cursor-hover-link flex items-center gap-2 font-mono text-[9px] tracking-widest text-[#B8B8B8] hover:text-white transition-colors duration-300 relative py-1 group"
+            >
+              {social.icon}
+              {social.label}
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full" />
+            </a>
+          ))}
+        </div>
+
       </div>
 
-      {/* Case Story Expansion Modal Overlay */}
-      <AnimatePresence>
-        {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedProject(null)}
-              className="absolute inset-0 bg-black/95 backdrop-blur-md"
-              id="portfolio-modal-backdrop"
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 180 }}
-              className="relative w-full max-w-5xl bg-[#0b0b0b] border border-white/10 rounded-2xl overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row h-[90vh] md:h-auto max-h-[750px]"
-              id="portfolio-detail-card"
-            >
-              {/* Left Side: Cinematic Project Image */}
-              <div className="w-full md:w-1/2 relative bg-black flex items-center justify-center min-h-[250px] md:min-h-0 overflow-hidden">
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center filter brightness-[0.7]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/30 pointer-events-none" />
-                
-                {/* Floating branding tag */}
-                <div className="absolute bottom-6 left-6 p-4 bg-black/75 border border-white/5 rounded-xl backdrop-blur-md text-left max-w-xs">
-                  <span className="font-mono text-[9px] text-gold tracking-widest uppercase block mb-1">
-                    Branded Record
-                  </span>
-                  <span className="font-serif text-sm text-white block leading-normal">
-                    Crafted specifically for {selectedProject.client} in {selectedProject.year}.
-                  </span>
-                </div>
-              </div>
-
-              {/* Right Side: Narrative Details */}
-              <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto text-left flex flex-col justify-between">
-                {/* Close Button */}
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="absolute top-6 right-6 p-2 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 text-silver hover:text-white transition-all cursor-pointer z-10"
-                  aria-label="Close view"
-                  id="close-project-modal"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-
-                {/* Header */}
-                <div>
-                  <span className="font-mono text-[9px] tracking-[0.3em] text-gold uppercase block mb-2">
-                    {selectedProject.category}
-                  </span>
-                  <h2 className="font-serif text-3xl md:text-4xl text-white font-medium leading-none mb-6">
-                    {selectedProject.title}
-                  </h2>
-
-                  {/* Quick Meta */}
-                  <div className="grid grid-cols-2 gap-4 pb-6 border-b border-white/5 text-silver text-opacity-80">
-                    <div className="flex items-center gap-2">
-                      <User className="w-3.5 h-3.5 text-gold flex-shrink-0" />
-                      <span className="font-sans text-xs">Client: {selectedProject.client}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-gold flex-shrink-0" />
-                      <span className="font-sans text-xs">Timeline: {selectedProject.year}</span>
-                    </div>
-                  </div>
-
-                  {/* Scope of Work */}
-                  <div className="py-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Layers className="w-4 h-4 text-gold" />
-                      <span className="font-mono text-[10px] text-gold tracking-widest uppercase">Scope of Craft</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.scope.map((tag, tIdx) => (
-                        <span 
-                          key={tIdx} 
-                          className="px-2.5 py-1 rounded-full border border-white/5 bg-white/[0.03] text-silver font-mono text-[9px] tracking-wider uppercase"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Case Story description */}
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-4 h-4 text-gold" />
-                      <span className="font-mono text-[10px] text-gold tracking-widest uppercase">The Strategy</span>
-                    </div>
-                    <p className="font-sans text-xs md:text-sm text-silver leading-relaxed text-opacity-80">
-                      {selectedProject.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* High-Impact Stat counters */}
-                <div className="border-t border-white/5 pt-6 bg-black/20 p-4 rounded-xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="w-3.5 h-3.5 text-gold" />
-                    <span className="font-mono text-[9px] text-gold tracking-widest uppercase">Illustrative Benchmarks</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    {selectedProject.stats.map((stat, sIdx) => (
-                      <div key={sIdx} className="flex flex-col gap-1">
-                        <span className="font-serif text-lg md:text-2xl text-gold font-bold tracking-tight">
-                          {stat.value}
-                        </span>
-                        <span className="font-sans text-[8px] md:text-[10px] text-silver text-opacity-50 uppercase tracking-wider leading-none">
-                          {stat.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <span className="font-sans text-[8px] text-silver text-opacity-30 block mt-4 text-center leading-none">
-                    * Values marked as illustrative and based on model projection parameters.
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <style>{`
+        button:hover span {
+          color: #050505 !important;
+        }
+        button:hover .relative {
+          color: inherit;
+        }
+      `}</style>
     </section>
   );
 };

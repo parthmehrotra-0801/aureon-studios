@@ -1,160 +1,113 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { LogoIcon } from "./Logo";
 
-export const CustomCursor: React.FC = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [trailPosition, setTrailPosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [cursorType, setCursorType] = useState<'default' | 'pointer' | 'view' | 'drag' | 'explore'>('default');
-  const [isVisible, setIsVisible] = useState(false);
-  const [isClicking, setIsClicking] = useState(false);
+interface LoaderProps {
+  onComplete: () => void;
+}
 
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const trailRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number | null>(null);
-  const mousePosition = useRef({ x: 0, y: 0 });
+export const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
+  const [progress, setProgress] = useState(0);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    // Check if touch device
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouch) return; // Disable custom cursor on touch devices for performance
-
-    setIsVisible(true);
-
-    const onMouseMove = (e: MouseEvent) => {
-      mousePosition.current = { x: e.clientX, y: e.clientY };
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const onMouseDown = () => setIsClicking(true);
-    const onMouseUp = () => setIsClicking(false);
-
-    const onMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-
-      // Check if target or parent is interactive
-      const isInteractive = target.closest('button, a, [role="button"], input, select, textarea');
-      const viewElement = target.closest('[data-cursor="view"]');
-      const dragElement = target.closest('[data-cursor="drag"]');
-      const exploreElement = target.closest('[data-cursor="explore"]');
-
-      if (viewElement) {
-        setCursorType('view');
-        setIsHovered(true);
-      } else if (dragElement) {
-        setCursorType('drag');
-        setIsHovered(true);
-      } else if (exploreElement) {
-        setCursorType('explore');
-        setIsHovered(true);
-      } else if (isInteractive) {
-        setCursorType('pointer');
-        setIsHovered(true);
-      } else {
-        setCursorType('default');
-        setIsHovered(false);
-      }
-    };
-
-    const onMouseLeave = () => {
-      setIsVisible(false);
-    };
-
-    const onMouseEnter = () => {
-      setIsVisible(true);
-    };
-
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mouseover', onMouseOver);
-    document.addEventListener('mouseleave', onMouseLeave);
-    document.addEventListener('mouseenter', onMouseEnter);
-
-    // Smooth lerping for trail cursor
-    const updateTrail = () => {
-      setTrailPosition((prev) => {
-        const dx = mousePosition.current.x - prev.x;
-        const dy = mousePosition.current.y - prev.y;
-        // Adjust the division factor for speed/smoothness (e.g., 6)
-        return {
-          x: prev.x + dx * 0.15,
-          y: prev.y + dy * 0.15,
-        };
+    // Elegant percentage increase with accelerating increments
+    let timer: NodeJS.Timeout;
+    const startProgress = () => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setIsDone(true);
+          setTimeout(() => {
+            onComplete();
+          }, 800); // Allow exit animations to finish
+          return 100;
+        }
+        
+        // Random incremental speedups for luxury feeling
+        const increment = prev < 30 
+          ? Math.floor(Math.random() * 8) + 3 
+          : prev < 70 
+          ? Math.floor(Math.random() * 12) + 4
+          : Math.floor(Math.random() * 5) + 2;
+          
+        return Math.min(prev + increment, 100);
       });
-      requestRef.current = requestAnimationFrame(updateTrail);
     };
 
-    requestRef.current = requestAnimationFrame(updateTrail);
-
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('mouseover', onMouseOver);
-      document.removeEventListener('mouseleave', onMouseLeave);
-      document.removeEventListener('mouseenter', onMouseEnter);
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-    };
-  }, []);
-
-  if (!isVisible) return null;
-
-  // Render cursor style based on current hovered type
-  const getCursorContent = () => {
-    switch (cursorType) {
-      case 'view':
-        return <span className="font-serif text-[10px] text-black font-semibold uppercase tracking-widest scale-90">View</span>;
-      case 'drag':
-        return <span className="font-serif text-[10px] text-black font-semibold uppercase tracking-widest scale-90">Drag</span>;
-      case 'explore':
-        return <span className="font-serif text-[9px] text-black font-bold uppercase tracking-widest scale-90">Go</span>;
-      default:
-        return null;
-    }
-  };
-
-  const getTrailClass = () => {
-    if (isClicking) return 'scale-50 border-gold bg-gold/20';
-    
-    switch (cursorType) {
-      case 'view':
-      case 'drag':
-      case 'explore':
-        return 'scale-[3.5] bg-gold border-gold text-black';
-      case 'pointer':
-        return 'scale-[2] border-gold bg-gold/10';
-      default:
-        return 'scale-100 border-white/50';
-    }
-  };
+    timer = setInterval(startProgress, 70);
+    return () => clearInterval(timer);
+  }, [onComplete]);
 
   return (
-    <>
-      {/* Precision Core Cursor */}
-      <div
-        ref={cursorRef}
-        className="fixed w-2 h-2 bg-gold rounded-full pointer-events-none z-50 mix-blend-difference -translate-x-1/2 -translate-y-1/2 transition-transform duration-200"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: `translate(-50%, -50%) scale(${isClicking ? 0.6 : 1})`,
-        }}
-      />
+    <AnimatePresence>
+      {!isDone && (
+        <motion.div
+          id="aureon-loader"
+          className="fixed inset-0 w-screen h-screen bg-[#050505] z-[99999] flex flex-col items-center justify-center overflow-hidden"
+          initial={{ opacity: 1 }}
+          exit={{ 
+            y: "-100%",
+            transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1] } 
+          }}
+        >
+          {/* Subtle noise and mesh elements inside loader */}
+          <div className="absolute inset-0 grid-mesh opacity-[0.03]" />
+          <div className="absolute inset-0 bg-radial-gradient from-white/[0.02] via-transparent to-transparent pointer-events-none" />
 
-      {/* Floating Trail Aura */}
-      <div
-        ref={trailRef}
-        className={`fixed w-8 h-8 rounded-full border border-solid pointer-events-none z-40 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-out ${getTrailClass()}`}
-        style={{
-          left: `${trailPosition.x}px`,
-          top: `${trailPosition.y}px`,
-        }}
-      >
-        {getCursorContent()}
-      </div>
-    </>
+          <div className="flex flex-col items-center gap-12 relative z-10">
+            {/* Elegant SVG Logo drawing itself */}
+            <div className="relative">
+              <LogoIcon size={120} animate={true} />
+              
+              {/* Soft metallic sheen sweep */}
+              <div className="absolute inset-0 w-full h-full pointer-events-none opacity-40 mix-blend-overlay">
+                <div 
+                  className="w-[200%] h-full bg-gradient-to-r from-transparent via-white/80 to-transparent -skew-x-12 translate-x-[-100%]"
+                  style={{
+                    animation: "sheenSweep 3s cubic-bezier(0.25, 1, 0.5, 1) infinite",
+                    animationDelay: "1.5s"
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Status and Percentage Indicator */}
+            <div className="flex flex-col items-center gap-2 select-none">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.4 }}
+                transition={{ duration: 1 }}
+                className="font-mono text-[9px] tracking-[0.4em] uppercase text-[#B8B8B8]"
+              >
+                ARCHITECTING BRAND INFLUENCE
+              </motion.div>
+              
+              <div className="flex items-baseline gap-1 mt-1">
+                <span className="font-display text-4xl font-extrabold tracking-tight text-white">
+                  {progress}
+                </span>
+                <span className="font-mono text-sm font-light text-[#B8B8B8]">%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom editorial tags */}
+          <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center text-[#B8B8B8]/30 font-mono text-[8px] tracking-[0.25em] uppercase z-10">
+            <span>© AUREON STUDIOS 2026</span>
+            <span>MILAN • TOKYO • MORADABAD • SEOUL</span>
+          </div>
+
+          {/* CSS Sheen keyframe for loader specifically */}
+          <style>{`
+            @keyframes sheenSweep {
+              0% { transform: translateX(-100%) skewX(-15deg); }
+              50% { transform: translateX(100%) skewX(-15deg); }
+              100% { transform: translateX(100%) skewX(-15deg); }
+            }
+          `}</style>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
